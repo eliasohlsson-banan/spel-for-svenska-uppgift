@@ -39,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "main::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-main-Debug-1b21a7142794869d0202.json",
+					"jsonFile" : "target-main-Debug-ad432fcc1fa07ed6915a.json",
 					"name" : "main",
 					"projectIndex" : 0
 				}
@@ -49,12 +49,12 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/C-C++/C++/SFML-cligame/build",
-		"source" : "C:/C-C++/C++/SFML-cligame"
+		"build" : "C:/c++/spel-for-svenska-uppgift/build",
+		"source" : "C:/c++/spel-for-svenska-uppgift"
 	},
 	"version" : 
 	{
 		"major" : 2,
-		"minor" : 7
+		"minor" : 8
 	}
 }

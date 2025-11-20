@@ -1,5 +1,5 @@
 CMakeFiles/main.dir/src/main.cpp.obj: \
- C:\C-C++\C++\SFML-cligame\src\main.cpp \
+ C:\c++\spel-for-svenska-uppgift\src\main.cpp \
  C:/mingw64/include/c++/14.2.0/iostream \
  C:/mingw64/include/c++/14.2.0/bits/requires_hosted.h \
  C:/mingw64/include/c++/14.2.0/x86_64-w64-mingw32/bits/c++config.h \
@@ -142,6 +142,11 @@ CMakeFiles/main.dir/src/main.cpp.obj: \
  C:/mingw64/include/c++/14.2.0/bits/ostream.tcc \
  C:/mingw64/include/c++/14.2.0/istream \
  C:/mingw64/include/c++/14.2.0/bits/istream.tcc \
+ C:/mingw64/include/c++/14.2.0/fstream \
+ C:/mingw64/include/c++/14.2.0/bits/codecvt.h \
+ C:/mingw64/include/c++/14.2.0/x86_64-w64-mingw32/bits/basic_file.h \
+ C:/mingw64/include/c++/14.2.0/x86_64-w64-mingw32/bits/c++io.h \
+ C:/mingw64/include/c++/14.2.0/bits/fstream.tcc \
  C:/libraries/SFML-3.0.2/include/SFML/Graphics.hpp \
  C:/libraries/SFML-3.0.2/include/SFML/Graphics/BlendMode.hpp \
  C:/libraries/SFML-3.0.2/include/SFML/Graphics/Export.hpp \
@@ -214,7 +219,6 @@ CMakeFiles/main.dir/src/main.cpp.obj: \
  C:/mingw64/include/c++/14.2.0/bits/locale_facets_nonio.h \
  C:/mingw64/include/c++/14.2.0/x86_64-w64-mingw32/bits/time_members.h \
  C:/mingw64/include/c++/14.2.0/x86_64-w64-mingw32/bits/messages_members.h \
- C:/mingw64/include/c++/14.2.0/bits/codecvt.h \
  C:/mingw64/include/c++/14.2.0/bits/locale_facets_nonio.tcc \
  C:/mingw64/include/c++/14.2.0/bits/locale_conv.h \
  C:/mingw64/include/c++/14.2.0/iomanip \

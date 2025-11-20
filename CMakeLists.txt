@@ -13,6 +13,7 @@ find_package(SFML 3.0 REQUIRED COMPONENTS Graphics Window System)
 add_executable(main src/main.cpp)
 
 file(COPY src/fonts DESTINATION ${CMAKE_BINARY_DIR}/bin)
+file(COPY src/texts DESTINATION ${CMAKE_BINARY_DIR}/bin)
 target_compile_features(main PRIVATE cxx_std_17)
 
 # Exakt samma syntax som ditt original-exempel!

@@ -1,0 +1,13 @@
+ss
+[text]
+dsadsaa
+[intro]
+du befinner dig i en grotta
+du vaknar
+det finns en väg framåt
+[next]
+bajskorv
+
+d
+
+[bajsa ner dig]

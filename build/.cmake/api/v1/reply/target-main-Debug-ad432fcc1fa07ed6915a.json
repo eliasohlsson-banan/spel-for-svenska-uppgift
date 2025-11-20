@@ -40,7 +40,7 @@
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 19,
+				"line" : 20,
 				"parent" : 0
 			},
 			{
@@ -118,10 +118,6 @@
 		[
 			{
 				"fragment" : "-g",
-				"role" : "flags"
-			},
-			{
-				"fragment" : "",
 				"role" : "flags"
 			},
 			{
