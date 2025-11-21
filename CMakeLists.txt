@@ -14,6 +14,7 @@ add_executable(main src/main.cpp)
 
 file(COPY src/fonts DESTINATION ${CMAKE_BINARY_DIR}/bin)
 file(COPY src/texts DESTINATION ${CMAKE_BINARY_DIR}/bin)
+file(COPY src/sprites DESTINATION ${CMAKE_BINARY_DIR}/bin)
 target_compile_features(main PRIVATE cxx_std_17)
 
 # Exakt samma syntax som ditt original-exempel!

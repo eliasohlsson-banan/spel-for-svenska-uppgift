@@ -1,13 +1,14 @@
-ss
-[text]
-dsadsaa
+
 [intro]
-du befinner dig i en grotta
-du vaknar
-det finns en väg framåt
-[next]
-bajskorv
+Du befinner dig i en mörk grotta. Det är kallt och blött. Du fryser.
 
-d
+Ett ljus skiner framifrån.
+[fackla-väggen]
+Ljuset kommer ifrån en fackla som sitter fast på väggen.
 
-[bajsa ner dig]
+Åt höger ser du kanten av ett stup. Du kan ser botten.
+
+Åt vänster är det kolsvart. Du ser ingenting, bara mörker.
+[sväng-vänster]
+
+[sväng-höger]

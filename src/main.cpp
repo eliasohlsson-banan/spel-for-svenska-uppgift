@@ -11,7 +11,7 @@ enum class GameState
 };
 
 // function for reading the text file and parsing the important text
-std::string getText(std::ifstream &textFile, const std::string &targetSection) 
+sf::Text getText(std::ifstream &textFile, const std::string &targetSection, sf::Font &font) 
 {
     bool insideSection = false;
     std::string line;
@@ -33,11 +33,15 @@ std::string getText(std::ifstream &textFile, const std::string &targetSection)
             result += line + "\n";
         }
     }
-    return result;
+    //converts the string to an sf::Text because otherwise it will fuck itself anally
+    sf::String sfmlResult = sf::String::fromUtf8(result.begin(), result.end());
+    sf::Text text(font, sfmlResult, 40);
+    text.setPosition({20 * (1920 / 320), 20 * (1080 / 180)});
+    return text;
 }
 
 // function for poll events (required by sfml to run every frame)
-void pollEvents(sf::RenderWindow &window, GameState &state)
+void pollEvents(sf::RenderWindow &window, GameState &state, sf::String &userInput, sf::Text &inputText)
 {
     while (const std::optional event = window.pollEvent())
     {
@@ -51,24 +55,57 @@ void pollEvents(sf::RenderWindow &window, GameState &state)
         {
             state = GameState::Playing;
         }
+
+        // text input box
+        if (event->is<sf::Event::TextEntered>())
+        {
+            auto unicode = event->getIf<sf::Event::TextEntered>()->unicode;
+
+            // check for backspace
+            if (unicode == 8)
+            {
+                if (!userInput.isEmpty())
+                    userInput.erase(userInput.getSize() - 1, 1);
+            }
+            // >= 32 are printable characters
+            else if (unicode >= 32) 
+            {
+                userInput += unicode;
+            }
+
+            inputText.setString(sf::String::fromUtf8(userInput.begin(), userInput.end()));
+        }
     }
 }
 
+
+
 int main()
 {   
+    // my sprites are in 320 / 180 so divide screen size by the sprite size to scale them properly
+    float scaleX = 1920 / 320.f;
+    float scaleY = 1200 / 180.f;
+
     // get text file
     std::ifstream textFile("texts/main.txt");
 
     // sections of the game
     std::vector<std::string> sections =
-    {"intro", "left-right", "dead end"};
+    {"intro", "fackla-väggen", "dead end"};
 
     // sets gamestate to the launch screen
     GameState state = GameState::LaunchScreen;
 
     // renders window
     sf::RenderWindow window(sf::VideoMode({720, 540}), "game");
+    
+    // ui + background sprite
+    sf::Texture ui("sprites/ui.png");
+    sf::Sprite uiSprite(ui);
 
+    // cursor sprite
+    sf::RectangleShape cursor;
+    cursor.setSize({4 * scaleX, 14 * scaleY});
 
     // self explanitory text stuff
     sf::Font font;
@@ -85,36 +122,46 @@ int main()
         return -1;
     }
 
-    sf::Text launchText(font, "Press any key to start...", 30);
-    launchText.setPosition({150, 250});
-    std::string introStr = getText(textFile, "intro");
-    sf::String sfmlIntroStr = sf::String::fromUtf8(introStr.begin(), introStr.end());
-    sf::Text introText(font, introStr, 30);
+    // user input string and text
+    sf::String userInput;
+    sf::Text inputText(font, "", 40);
+    inputText;
+
+    sf::Clock cursorTimer;
+
+    bool cursorVisible = true;
+    int currentSection = 0;
 
     // main loop
     while (window.isOpen())
     {
-        pollEvents(window, state);
+        pollEvents(window, state, userInput, inputText);
         
-        // if not on the launch screen
-        if (state == GameState::Playing)
+        // if windowed then fullscreen
+        if (window.getSize().x != sf::VideoMode::getDesktopMode().size.x)
         {
-            // if windowed then fullscreen
-            if (window.getSize().x != sf::VideoMode::getDesktopMode().size.x)
-            {
-                window.create(sf::VideoMode::getDesktopMode(), "Game", sf::State::Fullscreen);
-                window.setVerticalSyncEnabled(true);
-            }
-
-            window.clear();
-            window.draw(introText);
+            window.create(sf::VideoMode::getDesktopMode(), "Game", sf::State::Fullscreen);
+            window.setVerticalSyncEnabled(true);
+            uiSprite.setScale({scaleX, scaleY});
         }
 
-        if (state == GameState::LaunchScreen)
+        // main game logic
+        
+        cursor.setPosition({inputText.getPosition().x + inputText.getLocalBounds().size.x, inputText.getPosition().y});
+
+        if (cursorTimer.getElapsedTime().asSeconds() >= 0.5)
         {
-            window.clear();
-            window.draw(launchText);
+            cursorVisible = !cursorVisible;
+            cursorTimer.restart();
         }
+
+        static sf::Text sectionText = getText(textFile, sections[currentSection], font);
+        window.clear();
+        window.draw(uiSprite);
+        window.draw(sectionText);
+        window.draw(inputText);
+        if (cursorVisible) window.draw(cursor);
+        
 
         window.display();
     }
