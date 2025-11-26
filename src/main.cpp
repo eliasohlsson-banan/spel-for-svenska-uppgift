@@ -3,6 +3,8 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <cstring>
+#include <cstdlib>
+#include <experimental/random>
 
 // structure for commands and values
 struct command 
@@ -49,17 +51,15 @@ sf::Text getText(std::ifstream &textFile, const std::string &targetSection, sf::
 // fix for the stupid swedish letter bullshit
 sf::String UTF8(const char* str)
 {
-    return sf::String::fromUtf8(
-        str,
-        str + std::strlen(str)
-    );
+    return sf::String::fromUtf8(str, str + std::strlen(str));
 }
 
 // function for poll events (required by sfml to run every frame)
-void pollEvents(sf::RenderWindow &window, sf::String &userInput, sf::Text &inputText, std::vector<std::vector<command>> &commands, int &currentSection, sf::String &list, sf::Text &tutorialText)
+void pollEvents(sf::RenderWindow &window, sf::String &userInput, sf::Text &inputText, std::vector<std::vector<command>> &commands, int &currentSection, sf::String &list, sf::Text &tutorialText, sf::Clock &globalTimer)
 {
     while (const std::optional event = window.pollEvent())
     {
+        // if window is closed then close the window? bro fuck sfml this shit sucks
         if (event->is<sf::Event::Closed>())
         {
             window.close();
@@ -94,9 +94,9 @@ void pollEvents(sf::RenderWindow &window, sf::String &userInput, sf::Text &input
             inputText.setString(userInput);
         }
 
-        if (event->is<sf::Event::KeyPressed>() && event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::Enter)
+        if (event->is<sf::Event::KeyPressed>() && event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::Enter && globalTimer.getElapsedTime().asSeconds() >= 0.1)
         {
-
+            globalTimer.restart();
             for (const auto& cmd : commands[currentSection])
             {
                 if (userInput == cmd.text)
@@ -130,7 +130,7 @@ int main()
 
     // sections of the game
     std::vector<std::string> sections =
-    {"intro", "fackla-väggen", "stup", "mörk-hall", "stup-hoppa",};
+    {"intro", "fackla-väggen", "stup", "dark-hall", "stup-hoppa"};
 
     std::vector<std::vector<command>> commands =
     {
@@ -164,6 +164,7 @@ int main()
 
     sf::Texture jumpscare("assets/sprites/face.png");
     sf::Sprite face(jumpscare);
+    face.setScale({scaleX, scaleY});
 
     // cursor sprite
     sf::RectangleShape cursor;
@@ -198,14 +199,19 @@ int main()
     sf::Clock cursorTimer;
     sf::Clock textCheckTimer;
     sf::Clock faceTimer;
+    sf::Clock globalTimer;
 
     bool cursorVisible = true;
     int currentSection = 0;
+    bool faceVisible = false;
+    int faceRNG = 67;
+    int randomValue = 0;
+
 
     // main loop
     while (window.isOpen())
     {
-        pollEvents(window, userInput, inputText, commands, currentSection, list, tutorialText);
+        pollEvents(window, userInput, inputText, commands, currentSection, list, tutorialText, globalTimer);
         
         // if windowed then fullscreen
         if (window.getSize().x != sf::VideoMode::getDesktopMode().size.x)
@@ -216,7 +222,16 @@ int main()
         }
 
         // main game logic
-        cursor.setPosition({inputText.getPosition().x + inputText.getLocalBounds().size.x, inputText.getPosition().y});
+        cursor.setPosition({inputText.getPosition().x + inputText.getLocalBounds().size.x, inputText.getPosition().y + 5});
+
+        // jumpscare random logic
+        if (!faceVisible && faceTimer.getElapsedTime().asSeconds() >= 1)
+        {
+            randomValue = std::experimental::randint(1, 800);
+            if (randomValue == faceRNG) { faceVisible = true; }
+            std::cout << "random value: " << randomValue << "\n";
+            faceTimer.restart();
+        }
 
         // cursor blonk
         if (cursorTimer.getElapsedTime().asSeconds() >= 0.5)
@@ -224,8 +239,6 @@ int main()
             cursorVisible = !cursorVisible;
             cursorTimer.restart();
         }
-
-        // 
 
         // delay for text so it wont check every frame or hang itself completely (you little fucker fuck you) 
         if (textCheckTimer.getElapsedTime().asSeconds() >= 0.05)
@@ -241,6 +254,16 @@ int main()
         window.draw(inputText);
         window.draw(tutorialText);
         if (cursorVisible) window.draw(cursor);
+        // face jumpscare :)
+        if (faceVisible)
+        {
+            window.draw(face);
+            if (faceTimer.getElapsedTime().asSeconds() >= 0.15)
+            {
+                faceVisible = false;
+                faceTimer.restart();
+            }
+        }
 
         window.display();
     }

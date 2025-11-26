@@ -1,0 +1,4 @@
+C:/c++/spel-for-svenska-uppgift/build/CMakeFiles/main.dir
+C:/c++/spel-for-svenska-uppgift/build/CMakeFiles/copy_assets.dir
+C:/c++/spel-for-svenska-uppgift/build/CMakeFiles/edit_cache.dir
+C:/c++/spel-for-svenska-uppgift/build/CMakeFiles/rebuild_cache.dir
