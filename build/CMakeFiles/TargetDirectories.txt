@@ -1,3 +1,0 @@
-C:/C-C++/C++/spel-for-svenska-uppgift/build/CMakeFiles/main.dir
-C:/C-C++/C++/spel-for-svenska-uppgift/build/CMakeFiles/edit_cache.dir
-C:/C-C++/C++/spel-for-svenska-uppgift/build/CMakeFiles/rebuild_cache.dir

@@ -4,18 +4,28 @@ project(CMakeSFMLProject LANGUAGES CXX)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# Var din SFML-installation finns
 set(SFML_DIR "C:/libraries/SFML-3.0.2/lib/cmake/SFML")
 
-# Ladda SFML (INGEN FetchContent längre)
 find_package(SFML 3.0 REQUIRED COMPONENTS Graphics Window System)
 
 add_executable(main src/main.cpp)
 
-file(COPY src/fonts DESTINATION ${CMAKE_BINARY_DIR}/bin)
-file(COPY src/texts DESTINATION ${CMAKE_BINARY_DIR}/bin)
-file(COPY src/sprites DESTINATION ${CMAKE_BINARY_DIR}/bin)
+file(COPY assets DESTINATION ${CMAKE_BINARY_DIR}/bin)
 target_compile_features(main PRIVATE cxx_std_17)
 
-# Exakt samma syntax som ditt original-exempel!
+
 target_link_libraries(main PRIVATE SFML::Graphics)
+
+
+# Custom target to copy assets
+add_custom_target(copy_assets ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/assets
+            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets
+    COMMENT "Copying assets folder to output directory"
+)
+
+# Ensure executable depends on assets
+add_dependencies(main copy_assets)
+
+# yes i used ai for this, fuck off, cmake fucking sucks i hate this bullshit kys

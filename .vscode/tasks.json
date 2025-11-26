@@ -1,0 +1,11 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "copy-assets",
+            "type": "shell",
+            "command": "xcopy /E /Y \"${workspaceFolder}\\assets\" \"${workspaceFolder}\\build\\bin\\assets\"",
+            "problemMatcher": []
+        }
+    ]
+}
