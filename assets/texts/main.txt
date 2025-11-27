@@ -12,7 +12,7 @@ Ljuset kommer ifrån en fackla som sitter fast på väggen.
 
 Åt vänster är det kolsvart. Du ser ingenting, bara mörker.
 [stup]
-Du går fram till kanten av stupet. Det är för mörkt för att se botten.
+Du går fram till kanten av stupet. Det är för mörkt för att kunna se botten.
 
 Stupet var inte lika brett som du trodde.
 Du kanske skulle kunna hoppa över till andra sidan.
@@ -23,4 +23,14 @@ Du faller i vad som känns som evigheter, till slut når du botten.
 Du dör av fallet.
 [dark-hall]
 Du går åt vänster. Du inser att det är alldeles för mörkt 
-för att kunna fortsätta framåt. 
+för att kunna fortsätta framåt.
+
+Du ser en planka som ligger på marken. Den ser tjock och stabil ut.
+[efter-hopp]
+Du klarar hoppet.
+[ta-planka]
+Du tar upp plankan.
+[lägg-planka]
+Du lägger plankan du hittade över stupet. Den känns stabil. Du går över plankan 
+och klarar dig till andra sidan stupet. Runt ett hörn ligger en fackla på
+marken. Den är blöt efter allt vatten som droppar från väggarna.

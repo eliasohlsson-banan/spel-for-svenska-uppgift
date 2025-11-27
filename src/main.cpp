@@ -1,19 +1,27 @@
 #include <iostream>
 #include <fstream>
 #include <SFML/Graphics.hpp>
-#include <vector>
 #include <cstring>
 #include <cstdlib>
 #include <experimental/random>
+
+// structure for Items in the commands
+struct Items
+{
+    sf::String name;
+    bool collected = false;
+};
 
 // structure for commands and values
 struct command 
 {
     sf::String text;
     int SectionNumber;
+    Items* itemptr = nullptr;
+    Items* requiredItem = nullptr; // this makes conditional commands possible
 };
 
-// function for reading the text file and parsing the important text
+// function for reading the text file and parsing the text
 sf::Text getText(std::ifstream &textFile, const std::string &targetSection, sf::Font &font) 
 {
     bool insideSection = false;
@@ -55,7 +63,7 @@ sf::String UTF8(const char* str)
 }
 
 // function for poll events (required by sfml to run every frame)
-void pollEvents(sf::RenderWindow &window, sf::String &userInput, sf::Text &inputText, std::vector<std::vector<command>> &commands, int &currentSection, sf::String &list, sf::Text &tutorialText, sf::Clock &globalTimer)
+void pollEvents(sf::RenderWindow &window, sf::String &userInput, sf::Text &inputText, std::vector<std::vector<command>> &commands, int &currentSection, sf::String &list, sf::Text &tutorialText, sf::Clock &globalTimer, bool &gameOver, std::vector<Items> &itemVector)
 {
     while (const std::optional event = window.pollEvent())
     {
@@ -101,14 +109,40 @@ void pollEvents(sf::RenderWindow &window, sf::String &userInput, sf::Text &input
             {
                 if (userInput == cmd.text)
                 {
+
+                    if (cmd.itemptr != nullptr)
+                    {
+                        cmd.itemptr->collected = true;
+                        std::cout << "collected plank\n";
+                    }
+                    else 
+                    {
+                        std::cout << "itemptr is null\n";
+                    }
                     currentSection = cmd.SectionNumber;
                     break;
                 }
             }   
 
+
+
+            // if there are no commands make gameOver true
+            if (commands[currentSection].empty())
+            {
+                std::cout << "gameover = true\n";
+                gameOver = true;
+            }
+
             list = UTF8("Kommandon: ");
             for (const auto& cmd : commands[currentSection])
+            {
+
+                // if a required item for command, check if collected
+                if (cmd.requiredItem && !cmd.requiredItem->collected)
+                    continue;
+
                 list += cmd.text + UTF8(". ");
+            }
 
             tutorialText.setString(list);
             userInput.clear();
@@ -118,6 +152,14 @@ void pollEvents(sf::RenderWindow &window, sf::String &userInput, sf::Text &input
 }
 
 
+Items* findItem(std::vector<Items> &itemVector, const sf::String &name)
+{
+    for (auto &i : itemVector)
+        if (i.name == name)
+            return &i;
+    return nullptr;
+}
+
 
 int main()
 {   
@@ -125,34 +167,73 @@ int main()
     float scaleX = 1920 / 320.f;
     float scaleY = 1200 / 180.f;
 
+    // gamestate
+    bool gameOver = false;
+
     // get text file
     std::ifstream textFile("assets/texts/main.txt");
 
-    // sections of the game
+    // collectable Items in the game
+    std::vector<Items> itemVector =
+    {
+        {"Planka"},
+        {"disable-plank", true},
+        {"Torch"},
+        {"Rope"},
+        {"Dolk"}
+    };
+
+    // sections of the game, 4th argument are required items for the command to be available
     std::vector<std::string> sections =
-    {"intro", "fackla-väggen", "stup", "dark-hall", "stup-hoppa"};
+    {"intro", "fackla-väggen", "stup", "dark-hall", "stup-hoppa", "lägg-planka", "ta-planka"};
 
     std::vector<std::vector<command>> commands =
     {
         // section 0, start
         {
-            {UTF8("gå framåt"), 1}
+            {UTF8("gå framåt"), 1},
+            {UTF8("hugg digsjälv i magen"), 69/* vet ej*/, nullptr, findItem(itemVector, "Dolk")}
         },
         // section 1, höger/vänster
         {
-            {UTF8("gå åt höger"), 2},
-            {UTF8("gå åt vänster"), 3}
+            {UTF8("gå åt vänster"), 3},
+            {UTF8("gå åt höger"), 2}
         },
         // section 2, stup
         {
             {UTF8("hoppa"), 4},
-            {UTF8("gå tillbaks"), 1}
+            {UTF8("gå tillbaka"), 1},
+            {UTF8("lägg ner plankan"), 5, nullptr, findItem(itemVector, "Planka")}
         },
         // section 3, mörk korridor
         {
-            {UTF8("bajsa ner dig"), 6},
-            {UTF8("bajsa ner dig2"), 7}
+            {UTF8("ta upp plankan"), 6, findItem(itemVector, "Planka"), },
+            {UTF8("gå tillbaka"), 1}
+        },
+        // section 4, efter-hopp
+        {
+            // död
+        },
+        // section 5, 
+        {
+            {UTF8("ta upp fackla"), 8, findItem(itemVector, "Torch")},
+            {UTF8("gå tillbaka"), 1}
+        },
+        // section 6, planka
+        {
+            {UTF8("gå tillbaka"), 1}
+        },
+        //section 7, efter stup
+        {
+            {UTF8("placeholder"), 1},
+            {UTF8("placeholder"), 1}
+        },
+        // section 8, vet ej
+        {
+            {UTF8("placeholder"), 1},
+            {UTF8("placeholder"), 1}
         }
+
     };
 
     // renders window
@@ -198,7 +279,7 @@ int main()
 
     sf::Clock cursorTimer;
     sf::Clock textCheckTimer;
-    sf::Clock faceTimer;
+    sf::Clock RNGTimer;
     sf::Clock globalTimer;
 
     bool cursorVisible = true;
@@ -211,7 +292,7 @@ int main()
     // main loop
     while (window.isOpen())
     {
-        pollEvents(window, userInput, inputText, commands, currentSection, list, tutorialText, globalTimer);
+        pollEvents(window, userInput, inputText, commands, currentSection, list, tutorialText, globalTimer, gameOver, itemVector);
         
         // if windowed then fullscreen
         if (window.getSize().x != sf::VideoMode::getDesktopMode().size.x)
@@ -222,15 +303,16 @@ int main()
         }
 
         // main game logic
-        cursor.setPosition({inputText.getPosition().x + inputText.getLocalBounds().size.x, inputText.getPosition().y + 5});
+        cursor.setPosition({inputText.getPosition().x + inputText.getLocalBounds().size.x + 2, inputText.getPosition().y + 7});
 
         // jumpscare random logic
-        if (!faceVisible && faceTimer.getElapsedTime().asSeconds() >= 1)
+        if (!faceVisible && RNGTimer.getElapsedTime().asSeconds() >= 1)
         {
-            randomValue = std::experimental::randint(1, 800);
-            if (randomValue == faceRNG) { faceVisible = true; }
-            std::cout << "random value: " << randomValue << "\n";
-            faceTimer.restart();
+            randomValue = std::experimental::randint(1, 600);
+            if (randomValue == faceRNG) 
+                faceVisible = true;
+            //std::cout << "random value: " << randomValue << "\n";
+            RNGTimer.restart();
         }
 
         // cursor blonk
@@ -246,6 +328,22 @@ int main()
             sectionText = getText(textFile, sections[currentSection], font);
             textCheckTimer.restart();
         }
+        // check for game over
+        if (gameOver)
+        {
+            static sf::Clock gameOverClock;
+            cursorVisible = false;
+            cursorTimer.stop();
+            tutorialText.setScale({0.0001, 0.00001});
+            inputText.setScale({0.0001, 0.0001});
+
+            if (gameOverClock.getElapsedTime().asSeconds() >= 8)
+            {
+                faceVisible = true;
+                if (gameOverClock.getElapsedTime().asSeconds() >= 8.1)
+                    window.close();
+            }
+        }
 
         // screen text
         window.clear();
@@ -258,10 +356,10 @@ int main()
         if (faceVisible)
         {
             window.draw(face);
-            if (faceTimer.getElapsedTime().asSeconds() >= 0.15)
+            if (RNGTimer.getElapsedTime().asSeconds() >= 0.15)
             {
                 faceVisible = false;
-                faceTimer.restart();
+                RNGTimer.restart();
             }
         }
 
