@@ -1,8 +1,0 @@
-[
-{
-  "directory": "C:/c++/spel-for-svenska-uppgift/build",
-  "command": "C:\\mingw64\\bin\\g++.exe  @CMakeFiles/main.dir/includes_CXX.rsp -g -o CMakeFiles\\main.dir\\src\\main.cpp.obj -c C:\\c++\\spel-for-svenska-uppgift\\src\\main.cpp",
-  "file": "C:/c++/spel-for-svenska-uppgift/src/main.cpp",
-  "output": "CMakeFiles/main.dir/src/main.cpp.obj"
-}
-]
